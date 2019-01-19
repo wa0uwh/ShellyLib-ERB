@@ -137,7 +137,7 @@ There maybe better methods to implement this flow,
 
 # History:
 
-    Rev: ERB-0.next
+    Rev: ERB-0.30
         Clean Up
         Now Requires Moment Node to be Installed
         Added Human Readable Time Tic
