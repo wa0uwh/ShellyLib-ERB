@@ -57,7 +57,8 @@ There maybe better methods to implement this flow,
 # To Use:
 
     Requirements: NodeRed Install "node-red-contrib-moment" via Manage Palett
-    Note: This NodeRed Flow Tab must be "Enabled", it is provided "Disabled"
+    Note: This NodeRed Flow Tab must be "Enabled", it is provided "Disabled".
+    
     Customize the "MQTT Pub" Node
         Set Mqtt Publish Broker Address and Port
         Set up Birth, Close, and Will Topics in Messages Tab
