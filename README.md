@@ -1,8 +1,8 @@
-# ShellyLib-NodeRed
+# ShellyLib-ERB NodeRed Flow
 This is a ShellyLib Flow that reads Shelly Device CoAP Broadcast and outputs to status to Mqtt Broker. 
 This also, can reads Mqtt Subsciptions to Set Shelly Switch Devices
 
-Some Detials:
+# Some Detials:
 
 Use at your own risk.
  
@@ -13,7 +13,7 @@ It works very well for me, it does what I want.
 
 This is "beta" release, updates may be coming.
 
-Goals and Implementation:
+# Goals and Implementation:
 
      1. Maintain use of Factory Firmware
      2. Continue Using the Shelly Cloud
@@ -37,24 +37,24 @@ Goals and Implementation:
 There maybe better methods to implement this flow,
     Contributors Welcome.
     
-Note:
+# Note:
 
     All examples and configurations; show my "mqttPrefix"
     which must be configured before use
     
-Note:
+# Note:
 
     This CoAP Shelly Decoder uses a "Brute Force" method
         of decoding, because; it is easy, simple,
         costomizable, and the Shelly CoAP packets are of
         known content.
 
-Note:
+# Note:
 
     The example nickNames the "User Perference" node are
         some that I use, they must be changed to be useful.
 
-To Use:
+# To Use:
 
     Requirements: NodeRed Install "node-red-contrib-moment" via Manage Palett
     Note: This NodeRed Flow Tab must be "Enabled", it is provided "Disabled"
@@ -78,17 +78,17 @@ To Use:
         or just left turned off, as desired.
     
     
-Note:
+# Note:
 
     Shellys are very "chatty" on CoAP on the network
         as can be seen via the LOG output.
 
-Note:
+# Note:
 
     The ShellyLIb collects IPA from MQTT traffic of Shelly Device for later
         use as Aliases and REST Commands.
         
-Example MQTT Pub Commands (each group does the samething):
+# Example MQTT Pub Commands (each group does the samething):
 
     On/Off is NOT case sensitive, topic is case sensitive
     -
@@ -102,7 +102,7 @@ Example MQTT Pub Commands (each group does the samething):
     mosquitto_pub -t ebconpri/shelly/Hab/Sink/relay/0/set -m On
     
     
-Example Mqtt Broker Output:
+# Example Mqtt Broker Subscribe Output:
 
     ebconpri/shelly/ShellyLib/Rev ERB-0.24.D
     ebconpri/shelly/ShellyLib/Tic 1547852624 2019/01/18 15:03:44 -0800
@@ -125,7 +125,7 @@ Example Mqtt Broker Output:
     ebconpri/shelly/192.168.0.220/0/set OFF
 
 
-TBD:
+# TBD:
 
     Add a NodeRed Dashboard for Shelly Devices
     Represent Shelly-2 Power Better.
@@ -134,7 +134,7 @@ TBD:
     Maybe add JSON output.
 
 
-History:
+# History:
 
     Rev: ERB-0.next
         Clean Up
@@ -146,4 +146,4 @@ History:
             REST "on/off" command to Shelly
     Rev: ERB-0.20 - Initial Release
     
-End
+# End
