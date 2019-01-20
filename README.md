@@ -137,7 +137,7 @@ There maybe better methods to implement this flow,
 
 # History:
 
-    Rev: ERB-0.30
+    Rev: ERB-0.30 - Still Beta
         Clean Up
         Now Requires Moment Node to be Installed
         Added Human Readable Time Tic
@@ -145,6 +145,6 @@ There maybe better methods to implement this flow,
         Set all Mqtt Data to Retain
         Added MQTT Subscribe to "mqttPrefix" to send 
             REST "on/off" command to Shelly
-    Rev: ERB-0.20 - Initial Release
+    Rev: ERB-0.20 - Initial Beta Release
     
 # End
