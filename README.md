@@ -3,7 +3,7 @@ This is a ShellyLib Flow that reads Shelly Device CoAP Broadcast and outputs to 
 This also, can reads Mqtt Subsciptions to Set Shelly Switch Devices
 
 <p align="center">
-	<img src="ShellyLib-ERB.PNG" alt="NodeRedFlow">
+	<img src="ShellyLib-ERB-Rev-ERB-0.30.PNG" alt="NodeRedFlow">
 </p>
 
 # Some De
