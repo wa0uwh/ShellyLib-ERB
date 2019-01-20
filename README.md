@@ -2,7 +2,12 @@
 This is a ShellyLib Flow that reads Shelly Device CoAP Broadcast and outputs to status to Mqtt Broker. 
 This also, can reads Mqtt Subsciptions to Set Shelly Switch Devices
 
-# Some Detials:
+<p align="center">
+	<img src="ShellyLib-ERB.PNG" alt="NodeRedFlow">
+</p>
+
+# Some De
+tials:
 
 Use at your own risk.
  
