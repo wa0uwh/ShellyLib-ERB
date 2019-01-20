@@ -6,8 +6,7 @@ This also, can reads Mqtt Subsciptions to Set Shelly Switch Devices
 	<img src="ShellyLib-ERB-Rev-ERB-0.30.PNG" alt="NodeRedFlow">
 </p>
 
-# Some De
-tials:
+# Some Detials:
 
 Use at your own risk.
  
