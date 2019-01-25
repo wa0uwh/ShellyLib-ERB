@@ -1,0 +1,561 @@
+[
+    {
+        "id": "ad0d8b18.14a2e8",
+        "type": "tab",
+        "label": "ShellyLib-ERB-Rev:ERB-0.33",
+        "disabled": true,
+        "info": ""
+    },
+    {
+        "id": "59d1718d.601a3",
+        "type": "udp in",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Shelly CoAP",
+        "iface": "",
+        "port": "5683",
+        "ipv": "udp4",
+        "multicast": "true",
+        "group": "224.0.1.187",
+        "datatype": "buffer",
+        "x": 90,
+        "y": 460,
+        "wires": [
+            [
+                "e1ac3503.0643b8"
+            ]
+        ]
+    },
+    {
+        "id": "66d38cbb.c1fc24",
+        "type": "function",
+        "z": "ad0d8b18.14a2e8",
+        "name": "ShellyLib-ERB-Rev:ERB-0.33 A",
+        "func": "// Shelly Switch CoAP Filter and Mqtt Cmd Decoder\n// By: Eldon R. Brown - WA0UWH\n// Assisted By: Jeff Whitlatch - KO7M\n// Date: Jan 15, 2019\n// Updated: Jan 19, 2019\n// Updated: Jan 20, 2019\n// Updated: Jan 25, 2019\n\n// This Node Function Supports:\n//  Shelly-1\n//  Shelly-2\n//  Shelly-H&T\n//  Other Shellys in Raw Mode\n\n\n// Output 1 = Stand Message Output\n// Output 2 = Mqtt Message Output\n// Output 3 = Trash Output, could be used to help Debug\n\n// ###############################################################\n// Setup \n\nvar libRev = {};\nvar libTic = {};\nvar msg2 = {};\nvar tmp;\n\n\n// ###############################################################\n// Derive Lib Name and Revision from Node Label\n[ msg.lib, msg.libRev ] = node.name.split(/[^A-Za-z]Rev:/,2);\n\n    \n// ###############################################################\n// Set Some Base Values\nvar mqttPrefix = flow.get('mqttPrefix');\n    \n// ###############################################################\n// Send to Lib Status\nlibRev.Decoder = \"Encode: /Rev\"\nif (!context.get('do_rev_once')) {\n    node.status({fill:\"green\",shape:\"dot\", text:libRev.Decoder});\n    context.set('do_rev_once', true);\n    libRev.topic = msg.lib + \"/Rev\";\n    libRev.payload = msg.libRev;\n    libRev.retain = true;\n    node.send( libRev );\n}\n\n// ###############################################################\n// Pass Lib Time Tic\nlibTic.Decoder = \"Encoded: Tic\";\nlibTic.payload = msg.payload;\nif (msg.topic == 'Tic') {\n    node.status({fill:\"green\",shape:\"dot\", text:libTic.Decoder});\n    if(!context.get('do_reboot_tic_once')) {\n        context.set('do_reboot_tic_once', true);\n        libTic.topic = \"ShellyLib/Reboot/\" + msg.topic;\n        msg.retain = true;\n        node.send( libTic );\n    }\n    libTic.topic = \"ShellyLib/\" + msg.topic;\n    msg.retain = false;\n    return libTic;\n}\n\n\n// ###############################################################\n// ###############################################################\n// Mqtt Mesage Decoder\nmsg.topic = \"\" + msg.topic;\nvar prefix = mqttPrefix + \"/\";\nvar re = new RegExp(\"^\" + prefix);\n\n// if starts with mqttPrifix\nif ( msg.topic.match(re) ) {\n    \n    msg2.Decoder = \"Decode Mqtt\";\n    \n    msg2.topic = msg.topic.slice(prefix.length); // Remove mqttPrefix\n  \n    // if \"/set\"\n    var re_on_off = new RegExp(\"[oO][nN]$|^[oO][fF][fF]$\");\n    if (msg2.topic.match(/.+\\/[sS]et$/) &&\n        msg.payload.match( re_on_off ) ) {\n            \n        msg2.Decoder = \"Decode Mqtt /Set\";\n        node.status({fill:\"blue\",shape:\"dot\", text:msg2.Decoder + \" ___ \" + msg.payload.toLowerCase()});\n\n        // msg2.topicRaw = msg2.topic; // For Debug\n        msg2.topic = msg2.topic.replace(/\\/[sS]et$/, \"\"); // Remove trailling /Set\n        msg2.topic = msg2.topic.replace(\"/relay/\",\"/\");\n    \n        msg2.cut = msg2.topic.lastIndexOf(\"/\");\n        msg2.url = msg2.topic.slice(0, msg2.cut );\n        msg2.dev = msg2.topic.slice( msg2.cut +1 );\n        \n        msg2.key = msg2.topic;\n        msg2.url = context.get(msg2.key) || msg2.key;\n        \n        if (msg2.url.match(/^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+/) ) {}  // Match on IPA\n        else {\n            msg2.Error = \"Not an IPA, we can not use for REST\";\n            return [ null, null, msg2];\n        }\n        \n        // Build REST URL\n        msg2.payload = msg.payload.toLowerCase();\n        msg2.url += \"/relay/\" + msg2.dev;\n        msg2.url += \"?turn=\"  + msg2.payload;\n        return [ null, msg2 ];\n    }\n    \n    // If \"/Tic\"\n    else if ( msg2.topic.match(/.+\\/[tT][iI][cC]$/) ) {\n        msg2.Decoder = \"Decode Mqtt /Tic\";\n        node.status({fill:\"blue\",shape:\"dot\", text:msg2.Decoder});\n        return null;\n    }\n \n    // if \"/ip\"\n    else if ( msg2.topic.match(/.+\\/[iI][pP]$/) ) {\n        msg2.Decoder = \"Decode Mqtt, Caching /ip\";\n        node.status({fill:\"blue\",shape:\"dot\", text:msg2.Decoder + \" _ \" + msg.payload });\n        \n        msg2.key = msg2.topic.slice(0, msg2.topic.lastIndexOf(\"/\"));\n        msg2.key = msg2.key.replace(/\\/relay\\//, '/');\n        \n        msg2.payload = msg.payload;\n        context.set( msg2.key, msg2.payload ); // Cache Names and IPA\n        \n        return null;\n    }\n    \n    msg.Decoder = \"Mqtt Trash, Input is not needed\"\n    node.status({fill:\"yellow\",shape:\"dot\", text:msg.Decoder});\n    return null; // Do not ReProcess our Mqtt Reported Output\n}\n \n\n\n\n// ###############################################################\n// Establish Defaults \nmsg.payload = \"\" + msg.payload.slice(14);\n\n[msg.type, msg.deviceId] = msg.payload.split(/#/,2);\nmsg.mqttTopic = msg.type + \"/\" + msg.deviceId;\nmsg.nickName = msg.mqttTopic;\n\nmsg.payload = \"\" + msg.payload.match(/{\"G\":.*}/);\n// node.send([ null, msg ]); // For Debug\nif (typeof msg.payload == 'undefined') {\n    // Send to Abort Port - Must be wrong format\n    msg.Abort = \"WARNING: Payload Wrong Format\";\n    node.status({fill:\"yellow\",shape:\"dot\",text:msg.Abort});\n    msg.retain = false;\n    return [ null, null, msg ];\n}\n\nmsg.statRaw = msg.payload;\n\n\n\n// ###############################################################\n// ###############################################################\n// Functions\nfunction do_Decode(aSw) {\n    \n    msg.key = msg.mqttTopic + \"/\" + aSw;\n    msg.nickName = flow.get(\"nickNames\")[msg.key] || msg.key;\n    \n    context.set( msg.nickName, msg.ip ); // Cache Names and IPA\n    \n    msg.topic = msg.nickName;\n    msg.payload = tmp.G[aSw][2] ? \"on\" : \"off\";\n    msg.retain = flow.get(\"mqttRetain\");\n    node.send( msg );\n\n    msg2.topic = msg.mqttTopic + \"/\" + aSw + \"/ip\";\n    msg2.payload = msg.ip;\n    msg2.retain = true;\n    node.send( msg2 );\n    \n    msg2.topic = msg.nickName + \"/ip\";\n    msg2.payload = msg.ip;\n    msg2.retain = true;\n    node.send( msg2 );\n    \n    return\n    }\n\n// ###############################################################\n// ###############################################################\n// Main Decoder\n\n// ############################################################### \n// Decode Shelly-1 Devices\nif ( msg.type.match(/^SHSW-1/) ) {\n    msg.Decoder = \"Decoded: CoAP SHSW-1\"; // For Debug\n    node.status({fill:\"green\",shape:\"dot\", text:msg.Decoder + \" _ \" + msg.ip});\n    \n    \n    for (var sw in [0]) {  // For relay/sw\n        msg.nickName = msg.mqttTopic + \"/\" + sw;\n        msg.retain = false;\n        \n        try { msg.tmp = tmp = JSON.parse(msg.statRaw); }\n        catch(err) {\n            msg.Abort = \"WARNING: Json.parse Error\";\n            msg.retain = false;\n            node.status({fill:\"yellow\",shape:\"dot\",text:msg.Abort});\n            return [ null, null, msg ];\n        }\n        \n        // Do Special Things for Shelly-1 /0\n        do_Decode(0);\n    }\n    \n    return null;\n    \n} \n\n\n\n// ###############################################################\n// Decode Shelly-2 Devices\nelse if ( msg.type.match(/^SHSW-2/) ) {\n    msg.Decoder = \"Decoded: CoAP SHSW-2\"; // For Debug\n    node.status({fill:\"green\",shape:\"dot\", text:msg.Decoder + \" _ \" + msg.ip});\n   \n    for (var sw in [0,1]) { // For relay/sw  0 and 1\n        msg.nickName = msg.mqttTopic + \"/\" + sw;\n        msg.retain = false;\n            \n        try { tmp = JSON.parse(msg.statRaw); }\n        catch(err) {\n            msg.Abort = \"WARNING: JSON.parse Error\";\n            msg.retain = false;\n            node.status({fill:\"yellow\",shape:\"dot\",text:msg.Abort});\n            return [ null, null, msg ];\n        }\n        \n        // Do Special Things for Shelly-21 /0\n        do_Decode(sw);\n    }   \n    \n    // Do Special Things for Shelly-2 (both 0/1)\n    msg.key = msg.mqttTopic + \"/P\";\n    \n    msg.nickName =  msg.key;\n   \n    msg.topic = msg.nickName;\n    msg.payload = tmp.G[2][2].toFixed(2);\n    msg.topic = msg.mqttTopic + \"/P\";\n    msg.power = msg.payload;\n    msg.retain = flow.get(\"mqttRetain\");\n    node.send( msg );\n    \n    msg.nickName = flow.get(\"nickNames\")[msg.key] || msg.key;\n   \n    msg.topic = msg.nickName;\n    msg.payload = tmp.G[2][2].toFixed(2);\n    msg.topic = msg.mqttTopic + \"/P\";\n    msg.power = msg.payload;\n    msg.retain = flow.get(\"mqttRetain\");\n    node.send( msg );\n    \n    return  null;\n       \n} \n\n\n\n// ###############################################################\n// Decode Shelly-H&T Devices\nelse if ( msg.type.match(/^SHHT/) ) {\n    msg.Decoder = \"Decoded: CoAP SHHT\";\n    node.status({fill:\"green\",shape:\"dot\", text:msg.Decoder + \" ___ \" + msg.ip});\n\n    msg.nickName = msg.mqttTopic;\n    msg.retain = false;\n        \n    msg.nickName = flow.get(\"nickNames\")[msg.mqttTopic] || msg.nickName;\n       \n    msg.topic = msg.nickName + \"/ip\";\n    msg.payload = msg.ip || \"\";\n    msg.retain = true;\n    node.send([ msg ]);\n    \n    msg.retain = false;\n    try { tmp = JSON.parse(msg.statRaw); }\n    catch(err) {\n        msg.Abort = \"WARNING: JSON Parse Error\";\n        msg.retain = false;\n        node.status({fill:\"yellow\",shape:\"dot\",text:msg.Abort});\n        return [ null, null, msg ];\n    }\n    \n    msg.tempC =   tmp.G[0][2].toFixed(1);\n    msg.tempF = ((tmp.G[0][2] * 9)/5 + 32).toFixed(1);\n    msg.humd =   (tmp.G[1][2]/2).toFixed(1);\n    msg.batt =    tmp.G[2][2].toFixed(1);\n    \n    msg.topic = msg.nickName + \"/C\";\n    msg.payload = msg.tempC;\n    msg.retain = flow.get(\"mqttRetain\");\n    node.send( msg );\n    \n    msg.topic = msg.nickName + \"/F\";\n    msg.payload = msg.tempF;\n    msg.retain = flow.get(\"mqttRetain\");\n    node.send( msg );\n    \n    msg.topic = msg.nickName + \"/H\";\n    msg.payload = msg.humd;\n    msg.retain = flow.get(\"mqttRetain\");\n    node.send( msg );\n    \n    msg.topic = msg.nickName + \"/B\";\n    msg.payload = msg.batt;\n    msg.retain = flow.get(\"mqttRetain\");\n    node.send( msg );\n        \n    msg2.topic = msg.mqttTopic + \"/ip\";\n    msg2.payload = msg.ip || \"\";\n    msg2.retain = true;\n    node.send( msg2 );\n    \n    msg2.topic = msg.nickName + \"/ip\";\n    msg2.payload = msg.ip || \"\";\n    msg2.retain = true;\n    return msg2;\n} \n\n// ###############################################################\n// Decode Unknown Shelly Devices, in RAW Mode\nelse if ( msg.type.match(/^SH/) ) {\n    msg.Decoder = \"Decoded: CoAP SH??\";\n    node.status({fill:\"yellow\",shape:\"dot\", text:msg.Decoder + \" ____ \" + msg.ip});\n    msg.topic = msg.mqttTopic || 'unknown';\n    \n    msg2.retain = flow.get(\"mqttRetain\");\n    node.send( msg );\n        \n    msg2.topic = msg.topic + \"/ip\";\n    msg2.payload = msg.ip || \"\";\n    msg2.retain = true;\n    return msg2;\n}\n\n// ###############################################################\n// Send Other Unknown CoAP Input to LOG port for Debug\nmsg.Decoder = \"Decode Trash: - Bad Input\";\nnode.status({fill:\"red\",shape:\"dot\",text:msg.Decoder});\nmsg.Abort = \"Fail to Decode\";\nmsg.retain = false;\nreturn [ null, null, msg ];\n\n// End",
+        "outputs": 3,
+        "noerr": 0,
+        "x": 830,
+        "y": 460,
+        "wires": [
+            [
+                "74427ab2.b085e4",
+                "dddc6ce.621cf9"
+            ],
+            [
+                "5d7bc34.060643c",
+                "2e9feb67.b04dc4"
+            ],
+            [
+                "a06a20a7.ee1bf"
+            ]
+        ],
+        "outputLabels": [
+            "Mqtt Pub Output",
+            "REST Cmd Output",
+            "Abort Output"
+        ]
+    },
+    {
+        "id": "1acace1d.ad20b2",
+        "type": "mqtt out",
+        "z": "ad0d8b18.14a2e8",
+        "name": "MQTT Pub",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "broker": "eb1379d7.7783a8",
+        "x": 1590,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "74427ab2.b085e4",
+        "type": "rbe",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Ignore Repeats",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "payload",
+        "x": 1160,
+        "y": 440,
+        "wires": [
+            [
+                "efdb481b.3b67b8"
+            ]
+        ]
+    },
+    {
+        "id": "1e0ee8b1.bb99b7",
+        "type": "comment",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Shelly CoAP Decoder, Notes ---- Please Read ",
+        "info": "Author: Eldon R. Brown - WA0UWH\nDate: Jan 15, 2019\nUpdated: Jan 18, 2019\nUpdated: Jan 25, 2019\n\nUse at your own risk.\n \nThis is Demo/Example of a Node-Red Shelly-to-Mqtt Flow using \nfactory Standard Firmware. Shelly Cloud must be turned ON.\n\nIt works very well for me, it does what I want.\n\nThis is \"beta\" release, updates may be coming.\n\nGoals and Implementation:\n\n     1. Maintain use of Factory Firmware\n     2. Continue Using the Shelly Cloud\n     3. Support; Shelly-1, Shelly-2, and Shelly_HT\n            (these are the only Shelly device types that I have access)\n     4. Provide Shelly Device Status Reports to MQTT Broker\n     5. Allow MQTT Topic Customization\n     6. Allow for Custom MQTT Topic per Device via NickNames\n     7. Allow single point of NickName Admin for Node-Red\n            and MQTT Broker.\n     8. Implement MQTT Last-WILL and Connection Status\n     9. Retain all MQTT data\n    10. Subscribe to MQTT Broker with \"mqttPrefix\" and then Decode and\n            end \"on/off\" REST command to Shelly Switches.\n    11. Allow use of: Shelly Device Names, NickNames, or IP Address\n            for Shelly Switch Control\n    12. Allow use or NOT of \"/relay\" within NickNames, and \n            MWTT Published commands.\n    13. Provide User Option to Set MqttRetain flag\n\nThere maybe better methods to implement this flow,\n    Contributors Welcome.\n    \nNote:\n\n    All examples and configurations; show my \"mqttPrefix\"\n    which must be configured before use\n    \nNote:\n\n    This CoAP Shelly Decoder uses a \"Brute Force\" method\n        of decoding, because; it is easy, simple,\n        costomizable, and the Shelly CoAP packets are of\n        known content.\n\nNote:\n\n    The example nickNames the \"User Perference\" node are\n        some that I use, they must be changed to be useful.\n\nTo Use:\n\n    Requirements: NodeRed Install \"node-red-contrib-moment\" via Manage Palett\n    Note: This NodeRed Flow Tab must be \"Enabled\", it is provided \"Disabled\"\n    \n    Customize the \"MQTT Pub\" Node\n        Set Mqtt Publish Broker Address and Port\n        Set up Birth, Close, and Will Topics in Messages Tab\n        Set Mqtt Broker Authentication as necessary\n    Customize the \"MQTT Sub SET\" Node\n        Set Mqtt Subscribe Node wiht Broker, Port, and Topic\n        Set Mqtt Broker Authentication as necessary\n    Customize \"User Preferance\" Node:\n        Set up use.nickName to \"true\" or \"false\"\n        Set up mqttRetain to \"true\" or \"false\"\n        Set up NickNames\n        Set up Mqtt topic Prefix\n    Customize \"ShellyTic\" Node\n        Set the desired Time Tic Interval\n    Customize \"Date/Format\" Node\n        Set Time Zone and Local Date Format\n    The Debug and LOG outputs Nodes can be removed, \n        or just left turned off, as desired.\n    \n    \nNote:\n\n    Shellys are very \"chatty\" on CoAP on the network\n        as can be seen via the LOG output.\n\nNote:\n\n    The ShellyLIb collects IPA from MQTT traffic of Shelly Device for later\n        use as Aliases and REST Commands.\n        \nExample MQTT Pub Commands (each group does the samething):\n\n    On/Off is NOT case sensitive, topic is case sensitive\n    -\n    mosquitto_pub -t ebconpri/shelly/SHSW-1/32C849/relay/0/Set -m off\n    mosquitto_pub -t ebconpri/shelly/SHSW-1/32C849/0/Set -m ofF\n    mosquitto_pub -t ebconpri/shelly/Hab/Fan/0/set -m off\n    mosquitto_pub -t ebconpri/shelly/192.168.0.220/0/set -m off\n    mosquitto_pub -t ebconpri/shelly/192.168.0.220/0/set -m off\n    -\n    mosquitto_pub -t ebconpri/shelly/Hab/Sink/0/set -m on\n    mosquitto_pub -t ebconpri/shelly/Hab/Sink/relay/0/set -m On\n    \n    \nExample Mqtt Broker Output:\n\n    ebconpri/shelly/ShellyLib/Rev ERB-0.24.D\n    ebconpri/shelly/ShellyLib/Tic 1547852624 2019/01/18 15:03:44 -0800\n    ebconpri/shelly/Lab/WB-3D/0 on\n    ebconpri/shelly/SHSW-1/12C4EB/0/ip 192.168.0.225\n    ebconpri/shelly/Lab/WB-3D/0/ip 192.168.0.225\n    ebconpri/shelly/Hab/Bed-Light/0 off\n    ebconpri/shelly/Lab/Displays/0 on\n    ebconpri/shelly/Lab/Work-Light/0 on\n    ebconpri/shelly/Lab/Bench-Power/0 on\n    ebconpri/shelly/ShellyLib/Tic 1547852834 2019/01/18 15:07:14 -0800\n    ebconpri/shelly/Temp/Shop/C 9.0\n    ebconpri/shelly/Temp/Shop/F 48.2\n    ebconpri/shelly/Temp/Shop/H 70.0\n    ebconpri/shelly/ShellyLib/Tic 1547852854 2019/01/18 15:07:34 -0800\n    ebconpri/shelly/Temp/Lab/C 23.6\n    ebconpri/shelly/Temp/Lab/F 74.5\n    -\n    ebconpri/shelly/Hab/Sink/0/set on\n    ebconpri/shelly/192.168.0.220/0/set OFF\n\n\nTBD:\n\n    Represent Shelly-2 Power Better.\n    List Discoverd Devices as New.\n    Remove 404 Chat back from Node-Red UDP/CoAP.\n    Maybe add JSON output.\n\n\nHistory:\n\n    Rev: ERB-0.33\n        Changed Abort Log name to Trash Log\n        Code Clean up\n        Added Hooks to allow NodeRed GUI Dashboard\n        Added Optional Mqtt \"Retain\" mode\n    Rev: ERB-0.30 - Still Beta\n        Clean Up\n        Now Requires Moment Node to be Installed\n        Added Human Readable Time Tic\n        Suggests Customized Tic: Date, Time Format and Interval\n        Set all Mqtt Data to Retain\n        Added MQTT Subscribe to \"mqttPrefix\" to send \n            REST \"on/off\" command to Shelly\n    Rev: ERB-0.20 - Initial Beta Release\n    \nEnd",
+        "x": 230,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "6c730175.43b6d",
+        "type": "inject",
+        "z": "ad0d8b18.14a2e8",
+        "name": "ShellyTic",
+        "topic": "Tic",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "600",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.1",
+        "x": 290,
+        "y": 380,
+        "wires": [
+            [
+                "dc97792b.c56a68"
+            ]
+        ]
+    },
+    {
+        "id": "a06a20a7.ee1bf",
+        "type": "debug",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Decoder Trash LOG",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 880,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "efdb481b.3b67b8",
+        "type": "function",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Add MqttPrefix",
+        "func": "var key = 'mqttPrefix';\nvar prefix = flow.get(key);\nif (prefix) {\n    msg.topic = prefix + \"/\" + msg.topic;\n    node.status({fill:\"green\",shape:\"dot\",text:\"Prefix: \" + prefix});\n    return msg;\n} else {\n    msg.ERROR = \"'\" + key + \"' not set\";\n    node.status({fill:\"red\",shape:\"dot\", text:\"ERROR: No mqttPrefix\"});\n    return [null, msg];\n}",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 1400,
+        "y": 440,
+        "wires": [
+            [
+                "1acace1d.ad20b2"
+            ],
+            [
+                "eb4d29f8.897f28"
+            ]
+        ],
+        "outputLabels": [
+            "Normal",
+            "Errors"
+        ]
+    },
+    {
+        "id": "dc97792b.c56a68",
+        "type": "moment",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Date/Formal",
+        "topic": "",
+        "input": "payload",
+        "inputType": "msg",
+        "inTz": "PST8PDT",
+        "adjAmount": 0,
+        "adjType": "days",
+        "adjDir": "add",
+        "format": "X YYYY/MM/DD HH:mm:ss ZZ",
+        "locale": "en_US",
+        "output": "payload",
+        "outputType": "msg",
+        "outTz": "PST8PDT",
+        "x": 290,
+        "y": 420,
+        "wires": [
+            [
+                "e1ac3503.0643b8"
+            ]
+        ]
+    },
+    {
+        "id": "5d7bc34.060643c",
+        "type": "debug",
+        "z": "ad0d8b18.14a2e8",
+        "name": "REST LOG",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1150,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "4538ebac.5153a4",
+        "type": "mqtt in",
+        "z": "ad0d8b18.14a2e8",
+        "name": "MQTT Sub",
+        "topic": "ebconpri/shelly/#",
+        "qos": "0",
+        "broker": "67833c02.517fe4",
+        "x": 300,
+        "y": 500,
+        "wires": [
+            [
+                "e1ac3503.0643b8",
+                "1240da.01e52f27"
+            ]
+        ]
+    },
+    {
+        "id": "2e9feb67.b04dc4",
+        "type": "http request",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Shelly REST",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 1160,
+        "y": 480,
+        "wires": [
+            [
+                "f45ad9a6.78aaf8"
+            ]
+        ]
+    },
+    {
+        "id": "1cc5de15.c19842",
+        "type": "function",
+        "z": "ad0d8b18.14a2e8",
+        "name": "User Preference",
+        "func": "// User Preference\n// Author: Eldon R. Brown - WA0UWH\n// Date: Jan 15, 2019\n// UpDated: Jan 19, 2019\n\n\n// NickNames for Shelly Devices, Used by MQTT,\n// For Best Results; CamalCase, SlugTrails, or SnakeCase\n// should be used for NickNames\n//   CamelCase  = LooksSomethingLikeThis\n//   SlugTrails = Looks-something-like-this\n//   SnakeCase  = Looks_Something_Like_This\n\nmsg.topic += \"\";\n\n\n// ###############################################################\n// ###############################################################\n// ###############################################################\n// Start User Options\n\n// User Options: Set to \"true\" or \"false\"\nflow.set('useNickNames', true);\nflow.set('mqttRetain', true);\n\n// Set Mqtt Topic Prefix\nflow.set(\"mqttPrefix\", \"ebconpri/shelly\");\n\nif (flow.get('useNickNames') ) {\n    // Costomize NickNames\n    flow.set (\"nickNames\", {\n        // Lab Work Area\n        \"SHSW-1/0594EB/0\"   : \"Lab/Work-Light/0\",\n        \"SHSW-1/4A59DB/0\"   : \"Lab/Displays/0\",\n        \"SHSW-1/056B75/0\"   : \"Lab/SolderStation/0\",\n        \"SHSW-1/059851/0\"   : \"Lab/Bench-Power/0\",\n        \"SHSW-1/0586A0/0\"   : \"Hab/Cam-Power-01/0\",\n        \"SHSW-1/058C45/0\"   : \"Lab/Shield-01/0\",\n        \"SHSW-1/058616/0\"   : \"Lab/Shield-03/0\",\n        \"SHSW-1/12C4EB/0\"   : \"Lab/WB-3D/0\",\n       \n        // Kitchen Area\n        \"SHSW-21/32BDF9/0\"   : \"Hab/Sink/0\",\n        \"SHSW-21/32BDF9/1\"   : \"Hab/Kitchen/1\",\n        \n        \"SHSW-1/327FD2/0\"    : \"Hab/Microwave/0\",\n        \"SHSW-1/32C849/0\"    : \"Hab/Fan/relay/0\",\n       \n        // Sleeping Area\n        \"SHSW-1/4A581E/0\"    : \"Hab/Bed-Light/0\",\n       \n        // Bath Room\n        \"SHSW-1/32D063/0\"    : \"Hab/Bath-Fan/0\",\n        \n        // Env Heat Control\n        \"SHSW-1/12B7FD/0\"    : \"Env/Heat-Ctl/0\",\n        \n        // Env H&T\n        \"SHHT-1/22C4AB\"      : \"Temp/Computer\",\n        \"SHHT-1/5A8AC9\"      : \"Temp/Thermostat\",\n        \"SHHT-1/22C54F\"      : \"Temp/Bee\",\n        \"SHHT-1/22C3A3\"      : \"Temp/Shop\",\n        \"SHHT-1/22C3CA\"      : \"Temp/ManCave\",\n        \"SHHT-1/22C612\"      : \"Temp/Outside\",\n        \"SHHT-1/5A8C06\"      : \"Temp/Van\",\n        \n        }  \n    )\n}\n\n// End of User Options\n\n\n// ###############################################################\n// ###############################################################\n// ###############################################################\nmsg.nickNames = flow.get(\"nickNames\");\n\nif (flow.get('useNickNames'))\n    node.status({fill:\"green\",shape:\"dot\",text:\"NickNames Configured\"});\nelse \n    node.status({fill:\"yellow\",shape:\"dot\",text:\"NickNames Not Used\"});\n    \nreturn msg;\n\n// End",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 450,
+        "y": 280,
+        "wires": [
+            [
+                "642dbfcc.fecd8"
+            ]
+        ],
+        "outputLabels": [
+            "CoAP to Decoder Output"
+        ]
+    },
+    {
+        "id": "12bb08fc.f544d7",
+        "type": "inject",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Initialize",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 260,
+        "y": 280,
+        "wires": [
+            [
+                "1cc5de15.c19842"
+            ]
+        ]
+    },
+    {
+        "id": "642dbfcc.fecd8",
+        "type": "debug",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Init LOG",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 640,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "f45ad9a6.78aaf8",
+        "type": "debug",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Shelly REST LOG",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1390,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "dddc6ce.621cf9",
+        "type": "debug",
+        "z": "ad0d8b18.14a2e8",
+        "name": "LOG",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1130,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "1f9306f8.fbbf59",
+        "type": "link in",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Decoder",
+        "links": [
+            "e1ac3503.0643b8"
+        ],
+        "x": 605,
+        "y": 460,
+        "wires": [
+            [
+                "66d38cbb.c1fc24"
+            ]
+        ]
+    },
+    {
+        "id": "e1ac3503.0643b8",
+        "type": "link out",
+        "z": "ad0d8b18.14a2e8",
+        "name": "",
+        "links": [
+            "1f9306f8.fbbf59"
+        ],
+        "x": 455,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "2576e828.922918",
+        "type": "link out",
+        "z": "ad0d8b18.14a2e8",
+        "name": "To GUI In",
+        "links": [
+            "243c9217.98f57e",
+            "567e48ef.27f648"
+        ],
+        "x": 405,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "52b6d8d6.711808",
+        "type": "comment",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Decoder",
+        "info": "",
+        "x": 740,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "db167314.b49e",
+        "type": "comment",
+        "z": "ad0d8b18.14a2e8",
+        "name": "MQTT Publish",
+        "info": "",
+        "x": 1400,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "f29b1c1d.e7bda",
+        "type": "comment",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Initialization",
+        "info": "",
+        "x": 240,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "b48a1b4c.a90688",
+        "type": "comment",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Data Sources",
+        "info": "",
+        "x": 280,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "15b67033.c77e",
+        "type": "comment",
+        "z": "ad0d8b18.14a2e8",
+        "name": "// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //",
+        "info": "",
+        "x": 570,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "fc65bc5f.d2636",
+        "type": "comment",
+        "z": "ad0d8b18.14a2e8",
+        "name": "// End ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //",
+        "info": "",
+        "x": 570,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "7ff3d7.40a4cc28",
+        "type": "comment",
+        "z": "ad0d8b18.14a2e8",
+        "name": "CoAP & MQTT Sub Decoder, then Mqtt Publish, REST Control",
+        "info": "",
+        "x": 410,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "eb4d29f8.897f28",
+        "type": "debug",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Error LOG",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1610,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "6dbfd123.814f9",
+        "type": "link in",
+        "z": "ad0d8b18.14a2e8",
+        "name": "From GUI Out",
+        "links": [
+            "4a8fdef4.ec9f8",
+            "901efb7.df64008"
+        ],
+        "x": 565,
+        "y": 660,
+        "wires": [
+            [
+                "acc2209d.dbbff"
+            ]
+        ]
+    },
+    {
+        "id": "22db20b2.c400f",
+        "type": "comment",
+        "z": "ad0d8b18.14a2e8",
+        "name": "NodeRed GUI Ports",
+        "info": "",
+        "x": 490,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "1240da.01e52f27",
+        "type": "change",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Rm MqttPrefix",
+        "rules": [
+            {
+                "t": "change",
+                "p": "topic",
+                "pt": "msg",
+                "from": "mqttPrefix",
+                "fromt": "flow",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 290,
+        "y": 660,
+        "wires": [
+            [
+                "2576e828.922918"
+            ]
+        ]
+    },
+    {
+        "id": "acc2209d.dbbff",
+        "type": "function",
+        "z": "ad0d8b18.14a2e8",
+        "name": "Add MqttPrefix",
+        "func": "var key = 'mqttPrefix';\nvar prefix = flow.get(key);\nif (prefix) {\n    msg.topic = prefix + \"/\" + msg.topic;\n    node.status({fill:\"green\",shape:\"dot\",text:\"Prefix: \" + prefix});\n    return msg;\n} else {\n    msg.ERROR = \"'\" + key + \"' not set\";\n    node.status({fill:\"red\",shape:\"dot\", text:\"ERROR: No mqttPrefix\"});\n    return [null, msg];\n}",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 690,
+        "y": 660,
+        "wires": [
+            [
+                "66d38cbb.c1fc24"
+            ],
+            []
+        ],
+        "outputLabels": [
+            "Normal",
+            "Errors"
+        ]
+    },
+    {
+        "id": "eb1379d7.7783a8",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "Mqtt Pub",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "ShellyPub",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "ebconpri/shelly/Pub/Status",
+        "birthQos": "0",
+        "birthRetain": "true",
+        "birthPayload": "1",
+        "closeTopic": "ebconpri/shelly/Pub/Status",
+        "closeQos": "0",
+        "closeRetain": "true",
+        "closePayload": "0",
+        "willTopic": "ebconpri/shelly/Pub/Status",
+        "willQos": "0",
+        "willRetain": "true",
+        "willPayload": "0"
+    },
+    {
+        "id": "67833c02.517fe4",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "Mqtt Sub ",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "ShellySub",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "ebconpri/shelly/Sub/Status",
+        "birthQos": "0",
+        "birthRetain": "true",
+        "birthPayload": "1",
+        "closeTopic": "ebconpri/shelly/Sub/Status",
+        "closeQos": "0",
+        "closeRetain": "true",
+        "closePayload": "0",
+        "willTopic": "ebconpri/shelly/Sub/Status",
+        "willQos": "0",
+        "willRetain": "true",
+        "willPayload": "0"
+    }
+]
