@@ -3,10 +3,13 @@ This is a ShellyLib Flow that reads Shelly Device CoAP Broadcast and outputs to 
 This also, can reads Mqtt Subsciptions to Set Shelly Switch Devices
 
 <p align="center">
-	<img src="ShellyLib-ERB-Rev-ERB-0.30.PNG" alt="NodeRedFlow">
+	<img src="Screenshot from 2019-01-25 12-05-50.png" alt="NodeRedFlow">
 </p>
 
-# Some Detials:
+Author: Eldon R. Brown - WA0UWH
+Date: Jan 15, 2019
+Updated: Jan 18, 2019
+Updated: Jan 25, 2019
 
 Use at your own risk.
  
@@ -17,7 +20,7 @@ It works very well for me, it does what I want.
 
 This is "beta" release, updates may be coming.
 
-# Goals and Implementation:
+Goals and Implementation:
 
      1. Maintain use of Factory Firmware
      2. Continue Using the Shelly Cloud
@@ -41,27 +44,27 @@ This is "beta" release, updates may be coming.
 There maybe better methods to implement this flow,
     Contributors Welcome.
     
-# Note:
+Note:
 
     All examples and configurations; show my "mqttPrefix"
     which must be configured before use
     
-# Note:
+Note:
 
     This CoAP Shelly Decoder uses a "Brute Force" method
         of decoding, because; it is easy, simple,
         costomizable, and the Shelly CoAP packets are of
         known content.
 
-# Note:
+Note:
 
     The example nickNames the "User Perference" node are
         some that I use, they must be changed to be useful.
 
-# To Use:
+To Use:
 
     Requirements: NodeRed Install "node-red-contrib-moment" via Manage Palett
-    Note: This NodeRed Flow Tab must be "Enabled", it is provided "Disabled".
+    Note: This NodeRed Flow Tab must be "Enabled", it is provided "Disabled"
     
     Customize the "MQTT Pub" Node
         Set Mqtt Publish Broker Address and Port
@@ -83,17 +86,17 @@ There maybe better methods to implement this flow,
         or just left turned off, as desired.
     
     
-# Note:
+Note:
 
     Shellys are very "chatty" on CoAP on the network
         as can be seen via the LOG output.
 
-# Note:
+Note:
 
     The ShellyLIb collects IPA from MQTT traffic of Shelly Device for later
         use as Aliases and REST Commands.
         
-# Example MQTT Pub Commands (each group does the samething):
+Example MQTT Pub Commands (each group does the samething):
 
     On/Off is NOT case sensitive, topic is case sensitive
     -
@@ -107,7 +110,7 @@ There maybe better methods to implement this flow,
     mosquitto_pub -t ebconpri/shelly/Hab/Sink/relay/0/set -m On
     
     
-# Example Mqtt Broker Subscribe Output:
+Example Mqtt Broker Output:
 
     ebconpri/shelly/ShellyLib/Rev ERB-0.24.D
     ebconpri/shelly/ShellyLib/Tic 1547852624 2019/01/18 15:03:44 -0800
@@ -130,17 +133,21 @@ There maybe better methods to implement this flow,
     ebconpri/shelly/192.168.0.220/0/set OFF
 
 
-# TBD:
+TBD:
 
-    Add a NodeRed Dashboard for Shelly Devices
     Represent Shelly-2 Power Better.
     List Discoverd Devices as New.
     Remove 404 Chat back from Node-Red UDP/CoAP.
     Maybe add JSON output.
 
 
-# History:
+History:
 
+    Rev: ERB-0.33
+        Changed Abort Log name to Trash Log
+        Code Clean up
+        Added Hooks to allow NodeRed GUI Dashboard
+        Added Optional Mqtt "Retain" mode
     Rev: ERB-0.30 - Still Beta
         Clean Up
         Now Requires Moment Node to be Installed
@@ -151,4 +158,4 @@ There maybe better methods to implement this flow,
             REST "on/off" command to Shelly
     Rev: ERB-0.20 - Initial Beta Release
     
-# End
+End
