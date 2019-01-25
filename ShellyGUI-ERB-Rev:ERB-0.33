@@ -1,0 +1,2456 @@
+[
+    {
+        "id": "2c458aa9.f3bcc6",
+        "type": "tab",
+        "label": "ShellyGUI-ERB-Rev:ERB-0.33",
+        "disabled": true,
+        "info": ""
+    },
+    {
+        "id": "1a777eab.057dd1",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Fan",
+        "label": "Fan",
+        "tooltip": "",
+        "group": "da2c51f8.6e3b2",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Hab/Fan/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1050,
+        "y": 580,
+        "wires": [
+            [
+                "69154714.fcbd08"
+            ]
+        ]
+    },
+    {
+        "id": "859f2ba0.0bfe78",
+        "type": "switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Hab Selecter",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*/[^0-9\\/]+$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "cont",
+                "v": "/Env/Heat-Ctl/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Hab/Sink/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Hab/Kitchen/1",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Hab/Microwave/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Hab/Bed-Light/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Hab/Fan/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Hab/Bath-Fan/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Hab/Cam-Power-01/0",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 10,
+        "x": 730,
+        "y": 600,
+        "wires": [
+            [
+                "74c8f9e2.5495c8"
+            ],
+            [
+                "363fe914.ff52a6"
+            ],
+            [
+                "3882cfe7.d47"
+            ],
+            [
+                "4614b130.7efea"
+            ],
+            [
+                "ad29cfb5.da0fc"
+            ],
+            [
+                "974ed238.cfae"
+            ],
+            [
+                "1a777eab.057dd1"
+            ],
+            [
+                "416b4f77.42d0f"
+            ],
+            [
+                "73e17cad.40c954"
+            ],
+            [
+                "9a91f12c.87c11"
+            ]
+        ]
+    },
+    {
+        "id": "636c35fe.732a1c",
+        "type": "debug",
+        "z": "2c458aa9.f3bcc6",
+        "name": "REST Cmd LOG",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 2030,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "8968e369.61256",
+        "type": "switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Pass mqttPrefix",
+        "property": "_topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "else"
+            },
+            {
+                "t": "cont",
+                "v": "mqttPrefix",
+                "vt": "flow"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1630,
+        "y": 800,
+        "wires": [
+            [
+                "4493babf.252bb4"
+            ],
+            [
+                "6b7a12e9.341a2c"
+            ]
+        ]
+    },
+    {
+        "id": "72e90fa2.51a39",
+        "type": "debug",
+        "z": "2c458aa9.f3bcc6",
+        "name": "MQTT Sub Trash LOG",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1710,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "4493babf.252bb4",
+        "type": "rbe",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Ignore Repeats",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "payload",
+        "x": 1840,
+        "y": 800,
+        "wires": [
+            [
+                "636c35fe.732a1c",
+                "901efb7.df64008"
+            ]
+        ]
+    },
+    {
+        "id": "901efb7.df64008",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "GUI Out",
+        "links": [
+            "6dbfd123.814f9"
+        ],
+        "x": 1975,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "567e48ef.27f648",
+        "type": "link in",
+        "z": "2c458aa9.f3bcc6",
+        "name": "GUI In",
+        "links": [
+            "2576e828.922918"
+        ],
+        "x": 175,
+        "y": 820,
+        "wires": [
+            [
+                "2de0f0d8.d4564"
+            ]
+        ]
+    },
+    {
+        "id": "78b6b25d.7396bc",
+        "type": "comment",
+        "z": "2c458aa9.f3bcc6",
+        "name": "MQTT GUI Cmd Decoder",
+        "info": "",
+        "x": 230,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "5968d598.d7ee5c",
+        "type": "link in",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Trash LOG",
+        "links": [
+            "6b7a12e9.341a2c",
+            "9a91f12c.87c11",
+            "74c8f9e2.5495c8",
+            "2a0c09d6.658816",
+            "2f88f25.44b420e",
+            "26599648.06134a",
+            "e4029006.2e15f",
+            "a2fc1ea7.cdb65",
+            "9bf772ea.7d105",
+            "c97c38a4.0d5be8",
+            "7604b105.01a53",
+            "4a8ae142.520e2",
+            "1bf1a3a1.035b8c",
+            "3a310728.364528",
+            "69a87e7a.0a8a4"
+        ],
+        "x": 1555,
+        "y": 960,
+        "wires": [
+            [
+                "72e90fa2.51a39"
+            ]
+        ]
+    },
+    {
+        "id": "6b7a12e9.341a2c",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "5968d598.d7ee5c"
+        ],
+        "x": 1705,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "9a91f12c.87c11",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "5968d598.d7ee5c"
+        ],
+        "x": 785,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "3882cfe7.d47",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Sink",
+        "label": "Sink",
+        "tooltip": "",
+        "group": "da2c51f8.6e3b2",
+        "order": 1,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Hab/Sink/relay/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1050,
+        "y": 340,
+        "wires": [
+            [
+                "f8d3a0e8.87a6e"
+            ]
+        ]
+    },
+    {
+        "id": "5d7ee781.11d9d8",
+        "type": "change",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Append Set",
+        "rules": [
+            {
+                "t": "change",
+                "p": "topic",
+                "pt": "msg",
+                "from": "^(.*)$",
+                "fromt": "re",
+                "to": "$1/set",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1580,
+        "y": 680,
+        "wires": [
+            [
+                "7be04ed1.b0f7f"
+            ]
+        ]
+    },
+    {
+        "id": "2f5a2a5b.6c3586",
+        "type": "link in",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Append Set",
+        "links": [
+            "1cfcd7d9.ee5368",
+            "ec0a2c1e.0dca7",
+            "f040f4f1.1d9a58",
+            "c324bf2e.7f93b",
+            "37a6a1ba.45db1e",
+            "62943c30.03d1f4",
+            "387cd8a3.2f7098",
+            "5fac0deb.8d41d4",
+            "f8d3a0e8.87a6e",
+            "206b45c7.930a2a",
+            "b6095421.4638a8",
+            "ff47be10.83dc2",
+            "aa0295e9.c4d488",
+            "69154714.fcbd08",
+            "dec48d0a.c341d",
+            "c763e45b.3c1068",
+            "a957faca.5f5258",
+            "7569363e.ecc8c8",
+            "47f246e7.87fa18",
+            "68270248.3f41ac",
+            "e2f2d5bc.0a46c8",
+            "5ffa731c.f3bd2c",
+            "90f4e202.f194d"
+        ],
+        "x": 1455,
+        "y": 680,
+        "wires": [
+            [
+                "5d7ee781.11d9d8"
+            ]
+        ]
+    },
+    {
+        "id": "f8d3a0e8.87a6e",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "4614b130.7efea",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Kitchen",
+        "label": "Kitchen",
+        "tooltip": "",
+        "group": "da2c51f8.6e3b2",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Hab/Kitchen/relay/1",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1060,
+        "y": 400,
+        "wires": [
+            [
+                "ec0a2c1e.0dca7"
+            ]
+        ]
+    },
+    {
+        "id": "73e17cad.40c954",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Cam_Power-01",
+        "label": "Cam-Power-01",
+        "tooltip": "",
+        "group": "da2c51f8.6e3b2",
+        "order": 4,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Hab/Cam-Power-01/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1080,
+        "y": 700,
+        "wires": [
+            [
+                "f040f4f1.1d9a58"
+            ]
+        ]
+    },
+    {
+        "id": "ec0a2c1e.0dca7",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "69154714.fcbd08",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "f040f4f1.1d9a58",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "74c8f9e2.5495c8",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "5968d598.d7ee5c"
+        ],
+        "x": 785,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "2de0f0d8.d4564",
+        "type": "change",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Set GUI_Update",
+        "rules": [
+            {
+                "t": "change",
+                "p": "topic",
+                "pt": "msg",
+                "from": "/relay/",
+                "fromt": "str",
+                "to": "/",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "GUI_Update_Only",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 290,
+        "y": 820,
+        "wires": [
+            [
+                "42e71b93.4017c4",
+                "62e7c918.fddcd8"
+            ]
+        ]
+    },
+    {
+        "id": "974ed238.cfae",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "BedLLight",
+        "label": "Bed-Light",
+        "tooltip": "",
+        "group": "da2c51f8.6e3b2",
+        "order": 5,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Hab/Bed-Light/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1060,
+        "y": 520,
+        "wires": [
+            [
+                "5fac0deb.8d41d4"
+            ]
+        ]
+    },
+    {
+        "id": "5fac0deb.8d41d4",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "ad29cfb5.da0fc",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Microwave",
+        "label": "Microwave",
+        "tooltip": "",
+        "group": "da2c51f8.6e3b2",
+        "order": 6,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Hab//Microwave/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1070,
+        "y": 460,
+        "wires": [
+            [
+                "37a6a1ba.45db1e"
+            ]
+        ]
+    },
+    {
+        "id": "37a6a1ba.45db1e",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "416b4f77.42d0f",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Bath-Fan",
+        "label": "Bath-Fan",
+        "tooltip": "",
+        "group": "da2c51f8.6e3b2",
+        "order": 7,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Hab/Bath-Fan/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1060,
+        "y": 640,
+        "wires": [
+            [
+                "ff47be10.83dc2"
+            ]
+        ]
+    },
+    {
+        "id": "ff47be10.83dc2",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "363fe914.ff52a6",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Heat-Ctl",
+        "label": "Heat-Ctl",
+        "tooltip": "",
+        "group": "da2c51f8.6e3b2",
+        "order": 8,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Env/Heat-Ctl/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1060,
+        "y": 280,
+        "wires": [
+            [
+                "1cfcd7d9.ee5368"
+            ]
+        ]
+    },
+    {
+        "id": "1cfcd7d9.ee5368",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "7be04ed1.b0f7f",
+        "type": "switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Ignore Gui Updates",
+        "property": "GUI_Update_Only",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1580,
+        "y": 740,
+        "wires": [
+            [
+                "26599648.06134a"
+            ],
+            [
+                "8968e369.61256"
+            ]
+        ]
+    },
+    {
+        "id": "b94d460a.957388",
+        "type": "inject",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Test ON",
+        "topic": "",
+        "payload": "on",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 660,
+        "y": 260,
+        "wires": [
+            [
+                "f739e4a4.2d4498"
+            ]
+        ]
+    },
+    {
+        "id": "fc1cb913.1fc748",
+        "type": "inject",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Test OFF",
+        "topic": "",
+        "payload": "off",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 660,
+        "y": 300,
+        "wires": [
+            [
+                "f739e4a4.2d4498"
+            ]
+        ]
+    },
+    {
+        "id": "f739e4a4.2d4498",
+        "type": "function",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Merge",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 820,
+        "y": 280,
+        "wires": [
+            [
+                "3882cfe7.d47"
+            ]
+        ]
+    },
+    {
+        "id": "42e71b93.4017c4",
+        "type": "switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Area Selector",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "/Env/",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Hab/",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Lab/",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Shop/",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Temp/",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 6,
+        "x": 390,
+        "y": 900,
+        "wires": [
+            [
+                "859f2ba0.0bfe78"
+            ],
+            [
+                "859f2ba0.0bfe78"
+            ],
+            [
+                "bf67e4e5.3901a8"
+            ],
+            [
+                "ce7b7bea.aadb58"
+            ],
+            [
+                "5df4072c.dd9758"
+            ],
+            [
+                "e4029006.2e15f"
+            ]
+        ]
+    },
+    {
+        "id": "26599648.06134a",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "5968d598.d7ee5c"
+        ],
+        "x": 1755,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "e4029006.2e15f",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "5968d598.d7ee5c"
+        ],
+        "x": 455,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "9159029d.83eaf",
+        "type": "comment",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Hab",
+        "info": "",
+        "x": 1000,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "6bbf2486.8c74ec",
+        "type": "comment",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Lab",
+        "info": "",
+        "x": 1000,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "1aa35881.545ab7",
+        "type": "comment",
+        "z": "2c458aa9.f3bcc6",
+        "name": "// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //",
+        "info": "",
+        "x": 500,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "4eb53f3c.95ea7",
+        "type": "comment",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Example: \"MQTT Sub\" Decoder and Node Red GUI",
+        "info": "",
+        "x": 300,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "f5812f81.7269b",
+        "type": "ui_slider",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Thermostat",
+        "label": "",
+        "tooltip": "",
+        "group": "da2c51f8.6e3b2",
+        "order": 9,
+        "width": "6",
+        "height": "1",
+        "passthru": true,
+        "outs": "end",
+        "topic": "/Temp/Thermostat/C",
+        "min": "18",
+        "max": "28",
+        "step": ".1",
+        "x": 1090,
+        "y": 1400,
+        "wires": [
+            [
+                "f84b9d62.c0cee",
+                "c763e45b.3c1068"
+            ]
+        ]
+    },
+    {
+        "id": "f84b9d62.c0cee",
+        "type": "debug",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Termostat LOG",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1080,
+        "y": 1340,
+        "wires": []
+    },
+    {
+        "id": "c763e45b.3c1068",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1245,
+        "y": 1400,
+        "wires": []
+    },
+    {
+        "id": "5df4072c.dd9758",
+        "type": "switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Temperature Selecter",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "/Temp/Thermostat/C",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Temp/Computer/C",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Temp/Outside/C",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Temp/Van/C",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Temp/Shop/C",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Temp/ManCave/C",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Temp/Bee/C",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 8,
+        "x": 700,
+        "y": 1360,
+        "wires": [
+            [
+                "f5812f81.7269b",
+                "f84b9d62.c0cee",
+                "d95dafb0.f3f8"
+            ],
+            [
+                "2ab60008.dc765"
+            ],
+            [
+                "3498a28c.45740e"
+            ],
+            [
+                "ef3ef05.027631"
+            ],
+            [
+                "ba7654de.cfc718"
+            ],
+            [
+                "5697c5f8.feeecc"
+            ],
+            [
+                "f513d1f5.0b8a6"
+            ],
+            [
+                "c97c38a4.0d5be8"
+            ]
+        ]
+    },
+    {
+        "id": "c97c38a4.0d5be8",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "5968d598.d7ee5c"
+        ],
+        "x": 795,
+        "y": 1460,
+        "wires": []
+    },
+    {
+        "id": "fcae5ce2.4673",
+        "type": "comment",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Temperature",
+        "info": "",
+        "x": 1030,
+        "y": 1300,
+        "wires": []
+    },
+    {
+        "id": "ec1c02fa.f41bc",
+        "type": "ui_lineargauge",
+        "z": "2c458aa9.f3bcc6",
+        "group": "b4fab773.d12658",
+        "order": 1,
+        "width": "1",
+        "height": "5",
+        "name": "Outs",
+        "colorLowArea": "#0000ff",
+        "colorMidArea": "#99ff99",
+        "colorHighArea": "#e81d1d",
+        "unit": "C",
+        "x": 1230,
+        "y": 1720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3498a28c.45740e",
+        "type": "change",
+        "z": "2c458aa9.f3bcc6",
+        "name": "OutSide",
+        "rules": [
+            {
+                "t": "set",
+                "p": "highlimit",
+                "pt": "msg",
+                "to": "80",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "lowlimit",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "setpoint",
+                "pt": "msg",
+                "to": "22",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1040,
+        "y": 1720,
+        "wires": [
+            [
+                "ec1c02fa.f41bc",
+                "2cc346f1.2ac25a"
+            ]
+        ]
+    },
+    {
+        "id": "ba7654de.cfc718",
+        "type": "change",
+        "z": "2c458aa9.f3bcc6",
+        "name": "OutSide",
+        "rules": [
+            {
+                "t": "set",
+                "p": "highlimit",
+                "pt": "msg",
+                "to": "80",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "lowlimit",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "setpoint",
+                "pt": "msg",
+                "to": "22",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1040,
+        "y": 1800,
+        "wires": [
+            [
+                "33f605fa.439fea",
+                "2cc346f1.2ac25a"
+            ]
+        ]
+    },
+    {
+        "id": "ef3ef05.027631",
+        "type": "change",
+        "z": "2c458aa9.f3bcc6",
+        "name": "OutSide",
+        "rules": [
+            {
+                "t": "set",
+                "p": "highlimit",
+                "pt": "msg",
+                "to": "80",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "lowlimit",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "setpoint",
+                "pt": "msg",
+                "to": "22",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1040,
+        "y": 1760,
+        "wires": [
+            [
+                "59db8d5e.404a94",
+                "2cc346f1.2ac25a"
+            ]
+        ]
+    },
+    {
+        "id": "5697c5f8.feeecc",
+        "type": "change",
+        "z": "2c458aa9.f3bcc6",
+        "name": "OutSide",
+        "rules": [
+            {
+                "t": "set",
+                "p": "highlimit",
+                "pt": "msg",
+                "to": "80",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "lowlimit",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "setpoint",
+                "pt": "msg",
+                "to": "22",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1040,
+        "y": 1840,
+        "wires": [
+            [
+                "ddd7c435.efe478",
+                "2cc346f1.2ac25a"
+            ]
+        ]
+    },
+    {
+        "id": "57f2291b.7810c8",
+        "type": "ui_lineargauge",
+        "z": "2c458aa9.f3bcc6",
+        "group": "bb519a5b.e933f8",
+        "order": 1,
+        "width": "1",
+        "height": "5",
+        "name": "Hab",
+        "colorLowArea": "#0000ff",
+        "colorMidArea": "#99ff99",
+        "colorHighArea": "#e81d1d",
+        "unit": "C",
+        "x": 1230,
+        "y": 1520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d95dafb0.f3f8",
+        "type": "change",
+        "z": "2c458aa9.f3bcc6",
+        "name": "InSide",
+        "rules": [
+            {
+                "t": "set",
+                "p": "highlimit",
+                "pt": "msg",
+                "to": "28",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "lowlimit",
+                "pt": "msg",
+                "to": "18",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "setpoint",
+                "pt": "msg",
+                "to": "22",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1050,
+        "y": 1520,
+        "wires": [
+            [
+                "57f2291b.7810c8",
+                "565a0f13.71092"
+            ]
+        ]
+    },
+    {
+        "id": "51d3b09.6a4225",
+        "type": "ui_lineargauge",
+        "z": "2c458aa9.f3bcc6",
+        "group": "bb519a5b.e933f8",
+        "order": 2,
+        "width": "1",
+        "height": "5",
+        "name": "Lab",
+        "colorLowArea": "#0000ff",
+        "colorMidArea": "#99ff99",
+        "colorHighArea": "#e81d1d",
+        "unit": "C",
+        "x": 1230,
+        "y": 1560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2ab60008.dc765",
+        "type": "change",
+        "z": "2c458aa9.f3bcc6",
+        "name": "InSide",
+        "rules": [
+            {
+                "t": "set",
+                "p": "highlimit",
+                "pt": "msg",
+                "to": "28",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "lowlimit",
+                "pt": "msg",
+                "to": "18",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "setpoint",
+                "pt": "msg",
+                "to": "22",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1050,
+        "y": 1560,
+        "wires": [
+            [
+                "51d3b09.6a4225",
+                "565a0f13.71092"
+            ]
+        ]
+    },
+    {
+        "id": "59db8d5e.404a94",
+        "type": "ui_lineargauge",
+        "z": "2c458aa9.f3bcc6",
+        "group": "b4fab773.d12658",
+        "order": 2,
+        "width": "1",
+        "height": "5",
+        "name": "Van",
+        "colorLowArea": "#0000ff",
+        "colorMidArea": "#99ff99",
+        "colorHighArea": "#e81d1d",
+        "unit": "C",
+        "x": 1230,
+        "y": 1760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "33f605fa.439fea",
+        "type": "ui_lineargauge",
+        "z": "2c458aa9.f3bcc6",
+        "group": "b4fab773.d12658",
+        "order": 3,
+        "width": "1",
+        "height": "5",
+        "name": "Shop",
+        "colorLowArea": "#0000ff",
+        "colorMidArea": "#99ff99",
+        "colorHighArea": "#e81d1d",
+        "unit": "C",
+        "x": 1230,
+        "y": 1800,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ddd7c435.efe478",
+        "type": "ui_lineargauge",
+        "z": "2c458aa9.f3bcc6",
+        "group": "b4fab773.d12658",
+        "order": 4,
+        "width": "1",
+        "height": "5",
+        "name": "Cave",
+        "colorLowArea": "#0000ff",
+        "colorMidArea": "#99ff99",
+        "colorHighArea": "#e81d1d",
+        "unit": "C",
+        "x": 1230,
+        "y": 1840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f513d1f5.0b8a6",
+        "type": "change",
+        "z": "2c458aa9.f3bcc6",
+        "name": "OutSide",
+        "rules": [
+            {
+                "t": "set",
+                "p": "highlimit",
+                "pt": "msg",
+                "to": "80",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "lowlimit",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "setpoint",
+                "pt": "msg",
+                "to": "22",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1040,
+        "y": 1880,
+        "wires": [
+            [
+                "c12244d1.277a88",
+                "2cc346f1.2ac25a"
+            ]
+        ]
+    },
+    {
+        "id": "c12244d1.277a88",
+        "type": "ui_lineargauge",
+        "z": "2c458aa9.f3bcc6",
+        "group": "b4fab773.d12658",
+        "order": 5,
+        "width": "1",
+        "height": "5",
+        "name": "Bee",
+        "colorLowArea": "#0000ff",
+        "colorMidArea": "#99ff99",
+        "colorHighArea": "#e81d1d",
+        "unit": "C",
+        "x": 1230,
+        "y": 1880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c6f10801.4d2d18",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Work-Light",
+        "label": "Work-Light",
+        "tooltip": "",
+        "group": "ed82301b.f99da",
+        "order": 1,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Lab/Work-Light/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1070,
+        "y": 800,
+        "wires": [
+            [
+                "387cd8a3.2f7098"
+            ]
+        ]
+    },
+    {
+        "id": "387cd8a3.2f7098",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "c87290b0.b9597",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Bench-Power",
+        "label": "Bench-Power",
+        "tooltip": "",
+        "group": "ed82301b.f99da",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Lab/Bench-Power/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1080,
+        "y": 920,
+        "wires": [
+            [
+                "dec48d0a.c341d"
+            ]
+        ]
+    },
+    {
+        "id": "3db18ba4.24d924",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Displays",
+        "label": "Displays",
+        "tooltip": "",
+        "group": "ed82301b.f99da",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Lab/Displays/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1060,
+        "y": 860,
+        "wires": [
+            [
+                "62943c30.03d1f4"
+            ]
+        ]
+    },
+    {
+        "id": "62943c30.03d1f4",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "dec48d0a.c341d",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "64616bd0.9b8a54",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "SolderStation",
+        "label": "SolderStation",
+        "tooltip": "",
+        "group": "ed82301b.f99da",
+        "order": 4,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Lab/SolderStation/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1080,
+        "y": 980,
+        "wires": [
+            [
+                "b6095421.4638a8"
+            ]
+        ]
+    },
+    {
+        "id": "b6095421.4638a8",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "bd8f704a.924aa",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "WB-3D",
+        "label": "WB-3D",
+        "tooltip": "",
+        "group": "ed82301b.f99da",
+        "order": 5,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Lab/WB-3D/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1060,
+        "y": 1040,
+        "wires": [
+            [
+                "206b45c7.930a2a"
+            ]
+        ]
+    },
+    {
+        "id": "206b45c7.930a2a",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "888f1732.534cf8",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Shield-01",
+        "label": "Shield-01",
+        "tooltip": "",
+        "group": "ed82301b.f99da",
+        "order": 6,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Lab/Shield-01/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1060,
+        "y": 1100,
+        "wires": [
+            [
+                "c324bf2e.7f93b"
+            ]
+        ]
+    },
+    {
+        "id": "c324bf2e.7f93b",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "64f221ac.58d21",
+        "type": "ui_switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Shield-03",
+        "label": "Shield-03",
+        "tooltip": "",
+        "group": "ed82301b.f99da",
+        "order": 7,
+        "width": "3",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Lab/Shield-03/0",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 1060,
+        "y": 1160,
+        "wires": [
+            [
+                "aa0295e9.c4d488"
+            ]
+        ]
+    },
+    {
+        "id": "aa0295e9.c4d488",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "2f5a2a5b.6c3586"
+        ],
+        "x": 1265,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "bf67e4e5.3901a8",
+        "type": "switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Lab Selecter",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*/[^0-9\\/]+$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "cont",
+                "v": "/Lab/Work-Light/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Lab/Displays/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Lab/Bench-Power/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Lab/SolderStation/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Lab/WB-3D/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Lab/Shield-01/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Lab/Shield-02/0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "/Lab/Shield-03/0",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 10,
+        "x": 730,
+        "y": 900,
+        "wires": [
+            [
+                "2f88f25.44b420e"
+            ],
+            [
+                "c6f10801.4d2d18"
+            ],
+            [
+                "3db18ba4.24d924"
+            ],
+            [
+                "c87290b0.b9597"
+            ],
+            [
+                "64616bd0.9b8a54"
+            ],
+            [
+                "bd8f704a.924aa"
+            ],
+            [
+                "888f1732.534cf8"
+            ],
+            [],
+            [
+                "64f221ac.58d21"
+            ],
+            [
+                "2a0c09d6.658816"
+            ]
+        ]
+    },
+    {
+        "id": "2a0c09d6.658816",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "5968d598.d7ee5c"
+        ],
+        "x": 785,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "2f88f25.44b420e",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "5968d598.d7ee5c"
+        ],
+        "x": 785,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "ce7b7bea.aadb58",
+        "type": "switch",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Shop Selecter TBD",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^.*/[^0-9\\/]+$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "cont",
+                "v": "/Shop/HiBauLight/0",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 3,
+        "x": 710,
+        "y": 1120,
+        "wires": [
+            [
+                "9bf772ea.7d105"
+            ],
+            [],
+            [
+                "a2fc1ea7.cdb65"
+            ]
+        ]
+    },
+    {
+        "id": "a2fc1ea7.cdb65",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "5968d598.d7ee5c"
+        ],
+        "x": 795,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "9bf772ea.7d105",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "5968d598.d7ee5c"
+        ],
+        "x": 795,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "8932bf50.ca562",
+        "type": "comment",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Shop - TBD",
+        "info": "",
+        "x": 1030,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "16a18825.cacdf8",
+        "type": "inject",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Test ON",
+        "topic": "",
+        "payload": "on",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 660,
+        "y": 360,
+        "wires": [
+            [
+                "e2228d43.3fe65"
+            ]
+        ]
+    },
+    {
+        "id": "5d70f499.8cdfcc",
+        "type": "inject",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Test OFF",
+        "topic": "",
+        "payload": "off",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 660,
+        "y": 400,
+        "wires": [
+            [
+                "e2228d43.3fe65"
+            ]
+        ]
+    },
+    {
+        "id": "e2228d43.3fe65",
+        "type": "function",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Merge",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 820,
+        "y": 380,
+        "wires": [
+            [
+                "1a777eab.057dd1"
+            ]
+        ]
+    },
+    {
+        "id": "62e7c918.fddcd8",
+        "type": "debug",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Switch LOG",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 430,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "34622435.7799dc",
+        "type": "comment",
+        "z": "2c458aa9.f3bcc6",
+        "name": "// End ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- //",
+        "info": "",
+        "x": 480,
+        "y": 2060,
+        "wires": []
+    },
+    {
+        "id": "488a5eff.b0aed",
+        "type": "alexa-home",
+        "z": "2c458aa9.f3bcc6",
+        "devicename": "Workstation",
+        "inputtrigger": false,
+        "x": 210,
+        "y": 520,
+        "wires": [
+            [
+                "5d3af70e.532148",
+                "3e7cc8cf.44e9d8"
+            ]
+        ]
+    },
+    {
+        "id": "3e7cc8cf.44e9d8",
+        "type": "debug",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Alexa DEBUG",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 390,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "7de266f5.cb5798",
+        "type": "comment",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Example: \"Alexa\"  Cmd/Scene Decoder",
+        "info": "These are Special Commands that Alexa would\nnot normally know about via Shelly-Cloud or\nother Service.\n\nThese can be used for Single use, or as Scenes",
+        "x": 280,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "11641838.7e3c18",
+        "type": "link in",
+        "z": "2c458aa9.f3bcc6",
+        "name": "WorkStation Scene",
+        "links": [
+            "5d3af70e.532148"
+        ],
+        "x": 915,
+        "y": 880,
+        "wires": [
+            [
+                "c6f10801.4d2d18",
+                "c87290b0.b9597",
+                "bd8f704a.924aa",
+                "3db18ba4.24d924"
+            ]
+        ]
+    },
+    {
+        "id": "5d3af70e.532148",
+        "type": "link out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "",
+        "links": [
+            "11641838.7e3c18"
+        ],
+        "x": 355,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "3d589d4d.620e02",
+        "type": "alexa-home",
+        "z": "2c458aa9.f3bcc6",
+        "devicename": "Rickets",
+        "inputtrigger": false,
+        "x": 200,
+        "y": 580,
+        "wires": [
+            [
+                "3e7cc8cf.44e9d8"
+            ]
+        ]
+    },
+    {
+        "id": "c3e7e2da.52438",
+        "type": "persist in",
+        "z": "2c458aa9.f3bcc6",
+        "name": "InSide Temp Cache",
+        "storageNode": "fd6d69cb.52b218",
+        "x": 1590,
+        "y": 1640,
+        "wires": []
+    },
+    {
+        "id": "c957240e.ed1218",
+        "type": "persist out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "InSide Temp Cache",
+        "storageNode": "fd6d69cb.52b218",
+        "x": 1210,
+        "y": 1640,
+        "wires": [
+            [
+                "cfefa4d5.8c83f8"
+            ]
+        ]
+    },
+    {
+        "id": "fc678937.5b2718",
+        "type": "persist out",
+        "z": "2c458aa9.f3bcc6",
+        "name": "OutSide Temp Cache",
+        "storageNode": "fd6d69cb.52b218",
+        "x": 1200,
+        "y": 1960,
+        "wires": [
+            [
+                "9424eb01.2c3138"
+            ]
+        ]
+    },
+    {
+        "id": "8cc51ab9.72b9f8",
+        "type": "persist in",
+        "z": "2c458aa9.f3bcc6",
+        "name": "OutSide Temp Cache",
+        "storageNode": "fd6d69cb.52b218",
+        "x": 1600,
+        "y": 1960,
+        "wires": []
+    },
+    {
+        "id": "2cc346f1.2ac25a",
+        "type": "change",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Trim Names",
+        "rules": [
+            {
+                "t": "change",
+                "p": "topic",
+                "pt": "msg",
+                "from": "/[^/]+$",
+                "fromt": "re",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "topic",
+                "pt": "msg",
+                "from": "^.+/",
+                "fromt": "re",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1250,
+        "y": 1920,
+        "wires": [
+            [
+                "9424eb01.2c3138"
+            ]
+        ]
+    },
+    {
+        "id": "565a0f13.71092",
+        "type": "change",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Trim Names",
+        "rules": [
+            {
+                "t": "change",
+                "p": "topic",
+                "pt": "msg",
+                "from": "/[^/]+$",
+                "fromt": "re",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "topic",
+                "pt": "msg",
+                "from": "^.+/",
+                "fromt": "re",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1250,
+        "y": 1600,
+        "wires": [
+            [
+                "cfefa4d5.8c83f8"
+            ]
+        ]
+    },
+    {
+        "id": "9424eb01.2c3138",
+        "type": "ui_chart",
+        "z": "2c458aa9.f3bcc6",
+        "name": "Out Temp",
+        "group": "b4fab773.d12658",
+        "order": 6,
+        "width": "6",
+        "height": "6",
+        "label": "Out Temp",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm",
+        "interpolate": "bezier",
+        "nodata": "",
+        "dot": true,
+        "ymin": "-10",
+        "ymax": "20",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 1400,
+        "y": 1960,
+        "wires": [
+            [
+                "8cc51ab9.72b9f8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "cfefa4d5.8c83f8",
+        "type": "ui_chart",
+        "z": "2c458aa9.f3bcc6",
+        "name": "In Temp",
+        "group": "bb519a5b.e933f8",
+        "order": 3,
+        "width": "6",
+        "height": "6",
+        "label": "In Temp",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm",
+        "interpolate": "bezier",
+        "nodata": "",
+        "dot": true,
+        "ymin": "18",
+        "ymax": "28",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 1400,
+        "y": 1640,
+        "wires": [
+            [
+                "c3e7e2da.52438"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "da2c51f8.6e3b2",
+        "type": "ui_group",
+        "z": "",
+        "name": "Hab",
+        "tab": "fad2a7a7.062b08",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": true
+    },
+    {
+        "id": "b4fab773.d12658",
+        "type": "ui_group",
+        "z": "",
+        "name": "Temp Outside - 00 to 80",
+        "tab": "fad2a7a7.062b08",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": true
+    },
+    {
+        "id": "bb519a5b.e933f8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Temp Inside - 18 to 28",
+        "tab": "fad2a7a7.062b08",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": true
+    },
+    {
+        "id": "ed82301b.f99da",
+        "type": "ui_group",
+        "z": "",
+        "name": "Lab",
+        "tab": "fad2a7a7.062b08",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": true
+    },
+    {
+        "id": "fd6d69cb.52b218",
+        "type": "persist-store",
+        "z": "",
+        "filename": "persist2.json",
+        "interval": "60"
+    },
+    {
+        "id": "fad2a7a7.062b08",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
